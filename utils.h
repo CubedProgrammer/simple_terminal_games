@@ -2,6 +2,7 @@
 #define Included_utils_h
 enum basic_colour
 {   BLACK = 30, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE   };
+int run_game(int argl, char *argv[]);
 #ifdef _WIN32
 long
 #endif
