@@ -28,12 +28,31 @@ int main(int argl, char *argv[])
 }
 long keystroke(void)
 {
+#ifdef _WIN32
+    long
+#endif
     long val = 0;
+#ifndef _WIN32
     unsigned char buf[8];
     unsigned cnt = read(STDIN_FILENO, buf, sizeof buf);
     for(unsigned i = 0; i < cnt; ++i)
         val = (val << 8) | buf[i];
+#else
+    val = getch();
+#endif
     return val;
+}
+void move_cursor(enum cursor_direction dire, unsigned cnt)
+{
+    printf("\033\133%u%c", cnt, dire);
+}
+void formatting_reset(void)
+{
+    fputs("\033\133m", stdout);
+}
+void decorate_text(enum text_decoration dec)
+{
+    printf("\033\133%dm", dec);
 }
 void background_reset(void)
 {
