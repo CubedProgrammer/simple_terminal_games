@@ -1,6 +1,16 @@
 #ifndef Included_utils_h
 #define Included_utils_h
 #define KEY_ESC 033
+#define KEY_UP 06655501
+#define KEY_DN 06655502
+#define KEY_LEFT 06655504
+#define KEY_RIGHT 06655503
+#define KEY_BACKSPACE 0177
+#define KEY_DEL 03326635576
+#define KEY_HOME 06655510
+#define KEY_END 06655506
+#define KEY_PGUP 03326636576
+#define KEY_PGDN 03326637176
 enum basic_colour
 {   BLACK = 30, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE   };
 enum text_decoration

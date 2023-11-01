@@ -91,7 +91,7 @@ int run_game(int argl, char *argv[])
     board = malloc(area * sizeof(*board));
     memset(board, ' ', area * sizeof(*board));
     display(board, width, height);
-    for(long k = keystroke(); k != 033; k = result == 0 ? keystroke() : 033)
+    for(long k = keystroke(); k != KEY_ESC; k = result == 0 ? keystroke() : 033)
     {
         if(k >= '1' && k <= '9')
             k -= '1';
@@ -111,7 +111,7 @@ int run_game(int argl, char *argv[])
     }
     if(result == 1)
         puts("Draw!");
-    else
+    else if(result != 0)
         printf("%c has won the game.\n", result);
     free(board);
     return 0;

@@ -39,6 +39,45 @@ long keystroke(void)
         val = (val << 8) | buf[i];
 #else
     val = getch();
+    switch(val)
+    {
+        case 0240:
+            val = getch();
+            switch(val)
+            {
+                case 0107:
+                    val = KEY_HOME;
+                    break;
+                case 0110:
+                    val = KEY_UP;
+                    break;
+                case 0111:
+                    val = KEY_PGUP;
+                    break;
+                case 0113:
+                    val = KEY_LEFT;
+                    break;
+                case 0115:
+                    val = KEY_RIGHT;
+                    break;
+                case 0117:
+                    val = KEY_END;
+                    break;
+                case 0120:
+                    val = KEY_DN;
+                    break;
+                case 0121:
+                    val = KEY_PGDN;
+                    break;
+                case 0123:
+                    val = KEY_DEL;
+                    break;
+            }
+            break;
+        case 010:
+            val = KEY_BACKSPACE;
+            break;
+    }
 #endif
     return val;
 }
