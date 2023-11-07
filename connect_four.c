@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include"utils.h"
+char keystrokes[] = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 char getres(char *board, unsigned width, unsigned height, unsigned require)
 {
     char res = 0, eq;
@@ -71,6 +72,8 @@ void display(char *board, unsigned width, unsigned height)
         fwrite(board + r * width, 1, width, stdout);
         putchar('\n');
     }
+    if(width <= 36)
+        fwrite(keystrokes, 1, width + 1, stdout);
 }
 int run_game(int argl, char *argv[])
 {
@@ -90,6 +93,8 @@ int run_game(int argl, char *argv[])
     area = width * height;
     board = malloc(area * sizeof(*board));
     memset(board, ' ', area * sizeof(*board));
+    if(width <= 36)
+        keystrokes[width] = '\n';
     display(board, width, height);
     for(long k = keystroke(); k != KEY_ESC; k = result == 0 ? keystroke() : 033)
     {
@@ -104,7 +109,7 @@ int run_game(int argl, char *argv[])
         if(play(board, width, height, k, playerch[currplayer]))
         {
             currplayer = !currplayer;
-            move_cursor(UP, height);
+            move_cursor(UP, height + 1);
             display(board, width, height);
         }
         result = getres(board, width, height, require);

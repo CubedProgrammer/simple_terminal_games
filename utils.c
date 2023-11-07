@@ -1,6 +1,8 @@
 #include<stdio.h>
+#ifdef _WIN32
 #include<termios.h>
 #include<unistd.h>
+#endif
 #include"utils.h"
 #ifdef _WIN32
 long
