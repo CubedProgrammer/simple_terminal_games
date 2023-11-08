@@ -22,6 +22,8 @@ int run_game(int argl, char *argv[]);
 long
 #endif
 long keystroke(void);
+void *malloc_table(unsigned width, unsigned height, unsigned size);
+void *tableset(void *ptr, int ch, unsigned width, unsigned height, unsigned size);
 void move_cursor(enum cursor_direction dire, unsigned cnt);
 void formatting_reset(void);
 void decorate_text(enum text_decoration dec);

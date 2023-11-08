@@ -1,12 +1,13 @@
 #include<stdio.h>
-#ifdef _WIN32
+#include<stdlib.h>
+#include<string.h>
+#ifndef _WIN32
 #include<termios.h>
 #include<unistd.h>
+#else
+#include<conio.h>
 #endif
 #include"utils.h"
-#ifdef _WIN32
-long
-#endif
 int main(int argl, char *argv[])
 {
 #ifndef _WIN32
@@ -28,6 +29,21 @@ int main(int argl, char *argv[])
 #endif
     return succ;
 }
+void *malloc_table(unsigned width, unsigned height, unsigned size)
+{
+    void *ptr = malloc(width * height * size + height * sizeof(void*));
+    void **table = ptr, *tmp = table + height;
+    for(unsigned i = 0; i < height; ++i)
+        table[i] = (char*)tmp + i * width * size;
+    return ptr;
+}
+void *tableset(void *ptr, int ch, unsigned width, unsigned height, unsigned size)
+{
+    return memset((void*)((void**)ptr + height), ch, width * height * size);
+}
+#ifdef _WIN32
+long
+#endif
 long keystroke(void)
 {
 #ifdef _WIN32
