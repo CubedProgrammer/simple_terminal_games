@@ -6,6 +6,7 @@
 #include<unistd.h>
 #else
 #include<conio.h>
+#include<windows.h>
 #endif
 #include"utils.h"
 int main(int argl, char *argv[])
@@ -39,7 +40,8 @@ void *malloc_table(unsigned width, unsigned height, unsigned size)
 }
 void *tableset(void *ptr, int ch, unsigned width, unsigned height, unsigned size)
 {
-    return memset((void*)((void**)ptr + height), ch, width * height * size);
+    memset((void*)((void**)ptr + height), ch, width * height * size);
+    return ptr;
 }
 #ifdef _WIN32
 long
@@ -90,10 +92,85 @@ long keystroke(void)
                 case 0123:
                     val = KEY_DEL;
                     break;
+                case 0122:
+                    val = KEY_INS;
+                    break;
+                case 0164:
+                    val = KEY_CTRL_RIGHT;
+                    break;
+                case 0222:
+                    val = KEY_CTRL_INS;
+                    break;
+                case 0163:
+                    val = KEY_CTRL_LEFT;
+                    break;
+                case 0166:
+                    val = KEY_CTRL_PGDN;
+                    break;
+                case 0215:
+                    val = KEY_CTRL_UP;
+                    break;
+                case 0165:
+                    val = KEY_CTRL_END;
+                    break;
+                case 0206:
+                    val = KEY_CTRL_PGUP;
+                    break;
+                case 0167:
+                    val = KEY_CTRL_HOME;
+                    break;
+                case 0223:
+                    val = KEY_CTRL_DEL;
+                    break;
+                case 0221:
+                    val = KEY_CTRL_DN;
+                    break;
             }
             break;
         case 010:
             val = KEY_BACKSPACE;
+            break;
+        case 0:
+            val = getch();
+            switch(val)
+            {
+                case 075:
+                    val = KEY_F3;
+                    break;
+                case 0102:
+                    val = KEY_F8;
+                    break;
+                case 077:
+                    val = KEY_F5;
+                    break;
+                case 0101:
+                    val = KEY_F7;
+                    break;
+                case 0103:
+                    val = KEY_F9;
+                    break;
+                case 0206:
+                    val = KEY_F12;
+                    break;
+                case 0100:
+                    val = KEY_F6;
+                    break;
+                case 0205:
+                    val = KEY_F11;
+                    break;
+                case 074:
+                    val = KEY_F2;
+                    break;
+                case 076:
+                    val = KEY_F4;
+                    break;
+                case 073:
+                    val = KEY_F1;
+                    break;
+                case 0104:
+                    val = KEY_F10;
+                    break;
+            }
             break;
     }
 #endif
