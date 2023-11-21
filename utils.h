@@ -40,7 +40,6 @@ enum text_decoration
 {   BOLD = 1, FAINT, ITALIC, UNDERLINE, STRIKE = 9, OVERLINE = 53   };
 enum cursor_direction
 {   UP = 'A', DOWN, RIGHT, LEFT   };
-int run_game(int argl, char *argv[]);
 #ifdef _WIN32
 long
 #endif
