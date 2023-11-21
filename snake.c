@@ -16,6 +16,10 @@ struct snake_cell *makecell(struct snake_cell *prev, struct snake_cell *next, un
         cell->next = next;
         cell->r = r;
         cell->c = c;
+        if(prev != NULL)
+            prev->next = cell;
+        if(next != NULL)
+            next->prev = cell;
     }
     return cell;
 }
@@ -35,6 +39,11 @@ void remove_cell(struct snake_cell *cell)
         cell->next->prev = cell->prev;
     free(cell);
 }
+void paintsnake(char **ptr, struct snake_cell *head)
+{
+    for(struct snake_cell *node = head; node != NULL; node = node->next)
+        ptr[node->r][node->c] = '#';
+}
 void display(char **ptr, char *buf, unsigned arenasz)
 {
     unsigned ind = 0;
@@ -48,6 +57,7 @@ void display(char **ptr, char *buf, unsigned arenasz)
         buf[ind++] = '\n';
     }
     fwrite(buf, 1, ind, stdout);
+    fflush(stdout);
     move_cursor(UP, arenasz);
 }
 int run_game(int argl, char *argv[])
@@ -56,6 +66,8 @@ int run_game(int argl, char *argv[])
     unsigned arenasz = 24;
     char **arena, *displaybuf;
     struct snake_cell *head, *tail;
+    long button;
+    int dx, dy;
     if(argv[1])
         arenasz = atoi(argv[1]);
     if(arenasz < 24)
@@ -63,9 +75,44 @@ int run_game(int argl, char *argv[])
     displaybuf = malloc(arenasz * (arenasz + 1));
     arena = malloc_table(arenasz, arenasz, sizeof(**arena));
     tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
+    head = makecell(NULL, NULL, 0, 1);
+    tail = makecell(head, NULL, 0, 0);
+    paintsnake(arena, head);
     display(arena, displaybuf, arenasz);
     while(alive)
     {
+        while(stdincnt() > 0)
+        {
+            dy = dx = 0;
+            button = keystroke();
+            switch(button)
+            {
+                case KEY_ESC:
+                    alive = 0;
+                    break;
+                case KEY_UP:
+                    dy = -1;
+                    break;
+                case KEY_LEFT:
+                    dx = -1;
+                    break;
+                case KEY_RIGHT:
+                    dx = 1;
+                    break;
+                case KEY_DN:
+                    dy = 1;
+                    break;
+                default:
+                    putchar('\a');
+                    fflush(stdout);
+            }
+            if(dx + dy)
+            {
+                head = makecell(NULL, head, head->r + dy, head->c + dx);
+                paintsnake(arena, head);
+            }
+        }
+        display(arena, displaybuf, arenasz);
         thsleep(50);
     }
     for(struct snake_cell *n = head, *next; n != NULL; n = next)
