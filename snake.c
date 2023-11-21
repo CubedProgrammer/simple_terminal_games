@@ -66,6 +66,7 @@ int run_game(int argl, char *argv[])
     unsigned arenasz = 24;
     char **arena, *displaybuf;
     struct snake_cell *head, *tail;
+    struct snake_cell *tmpcell;
     long button;
     int dx, dy;
     if(argv[1])
@@ -91,27 +92,32 @@ int run_game(int argl, char *argv[])
                     alive = 0;
                     break;
                 case KEY_UP:
+                    dx = 0;
                     dy = -1;
                     break;
                 case KEY_LEFT:
                     dx = -1;
+                    dy = 0;
                     break;
                 case KEY_RIGHT:
                     dx = 1;
+                    dy = 0;
                     break;
                 case KEY_DN:
+                    dx = 0;
                     dy = 1;
                     break;
                 default:
                     putchar('\a');
                     fflush(stdout);
             }
-            if(dx + dy)
-            {
-                head = makecell(NULL, head, head->r + dy, head->c + dx);
-                paintsnake(arena, head);
-            }
         }
+        head = makecell(NULL, head, head->r + dy, head->c + dx);
+        tmpcell = tail;
+        tail = tail->prev;
+        remove_cell(tmpcell);
+        tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
+        paintsnake(arena, head);
         display(arena, displaybuf, arenasz);
         thsleep(50);
     }
