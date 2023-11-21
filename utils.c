@@ -2,9 +2,13 @@
 #include<stdlib.h>
 #include<string.h>
 #ifndef _WIN32
+#include<sys/ioctl.h>
 #include<unistd.h>
 #else
 #include<conio.h>
+#include<namedpipeapi.h>
+#include<synchapi.h>
+#include<windows.h>
 #endif
 #include"utils.h"
 void *malloc_table(unsigned width, unsigned height, unsigned size)
@@ -152,6 +156,28 @@ long keystroke(void)
     }
 #endif
     return val;
+}
+int stdincnt(void)
+{
+#ifndef _WIN32
+    int cnt;
+    if(ioctl(STDIN_FILENO, FIONREAD, &cnt))
+#else
+    HANDLE in = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD cnt;
+    if(!PeekNamedPipe(in, NULL, 0, NULL, &cnt, NULL))
+#endif
+        cnt = -1;
+    return cnt;
+}
+int thsleep(unsigned ms)
+{
+#ifndef _WIN32
+    return usleep(ms * 1000);
+#else
+    Sleep(ms);
+    return 0;
+#endif
 }
 void move_cursor(enum cursor_direction dire, unsigned cnt)
 {

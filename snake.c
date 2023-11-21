@@ -52,6 +52,7 @@ void display(char **ptr, char *buf, unsigned arenasz)
 }
 int run_game(int argl, char *argv[])
 {
+    char alive = 1;
     unsigned arenasz = 24;
     char **arena, *displaybuf;
     struct snake_cell *head, *tail;
@@ -63,6 +64,10 @@ int run_game(int argl, char *argv[])
     arena = malloc_table(arenasz, arenasz, sizeof(**arena));
     tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
     display(arena, displaybuf, arenasz);
+    while(alive)
+    {
+        thsleep(50);
+    }
     for(struct snake_cell *n = head, *next; n != NULL; n = next)
     {
         next = n->next;
