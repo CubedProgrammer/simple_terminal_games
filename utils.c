@@ -6,8 +6,6 @@
 #include<unistd.h>
 #else
 #include<conio.h>
-#include<namedpipeapi.h>
-#include<synchapi.h>
 #include<windows.h>
 #endif
 #include"utils.h"
