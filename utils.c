@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<time.h>
 #ifndef _WIN32
 #include<sys/ioctl.h>
 #include<unistd.h>
@@ -155,6 +156,35 @@ long keystroke(void)
 #endif
     return val;
 }
+// Stolen from CPCDT
+#ifdef _WIN32
+long
+#endif
+long timems(void)
+{
+	time_t ms;
+#if __STDC_VERSION__ >= 201112L
+	struct timespec tm;
+	timespec_get(&tm, TIME_UTC);
+	ms = tm.tv_sec * 1000 + tm.tv_nsec / 1000000;
+#elif defined _WIN32
+	SYSTEMTIME tm;
+	GetSystemTime(&tm);
+	FILETIME ftm;
+	SystemTimeToFileTime(&tm, &ftm);
+	ULARGE_INTEGER num;
+	num.LowPart = ftm.dwLowDateTime;
+	num.HighPart = ftm.dwHighDateTime;
+	ms = num.QuadPart;
+	ms -= 116444736000000000;
+	ms /= 10000;
+#else
+	struct timespec tm;
+	clock_gettime(CLOCK_REALTIME, &tm);
+	ms = tm.tv_sec * 1000 + tm.tv_nsec / 1000000;
+#endif
+	return ms;
+}
 int stdincnt(void)
 {
 #ifndef _WIN32
@@ -167,6 +197,17 @@ int stdincnt(void)
 #endif
         cnt = -1;
     return cnt;
+}
+void init_lcg_default(struct linear_congruential_generator *gen)
+{
+    init_lcg(gen, 25214903917, 11, 281474976710656, time(NULL));
+}
+void init_lcg(struct linear_congruential_generator *gen, rand_t slope, rand_t yint, rand_t mod, rand_t seed)
+{
+    gen->slope = slope;
+    gen->yint = yint;
+    gen->mod = mod;
+    gen->seed = seed ^ slope;
 }
 int thsleep(unsigned ms)
 {

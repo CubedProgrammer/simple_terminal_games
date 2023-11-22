@@ -40,14 +40,32 @@ enum text_decoration
 {   BOLD = 1, FAINT, ITALIC, UNDERLINE, STRIKE = 9, OVERLINE = 53   };
 enum cursor_direction
 {   UP = 'A', DOWN, RIGHT, LEFT   };
+typedef
 #ifdef _WIN32
 long
 #endif
-long keystroke(void);
+long unsigned rand_t;
+struct linear_congruential_generator
+{
+    rand_t slope, yint, mod;
+    rand_t seed;
+};
+typedef long
+#ifdef _WIN32
+long
+#endif
+keystroke_t;
+keystroke_t keystroke(void);
 void *malloc_table(unsigned width, unsigned height, unsigned size);
 void *tableset(void *ptr, int ch, unsigned width, unsigned height, unsigned size);
-int thsleep(unsigned ms);
+#ifdef _WIN32
+long
+#endif
+long timems(void);
+void init_lcg_default(struct linear_congruential_generator *gen);
+void init_lcg(struct linear_congruential_generator *gen, rand_t slope, rand_t yint, rand_t mod, rand_t seed);
 int stdincnt(void);
+int thsleep(unsigned ms);
 void move_cursor(enum cursor_direction dire, unsigned cnt);
 void formatting_reset(void);
 void decorate_text(enum text_decoration dec);
