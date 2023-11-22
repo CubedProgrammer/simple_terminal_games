@@ -67,8 +67,11 @@ int run_game(int argl, char *argv[])
     char **arena, *displaybuf;
     struct snake_cell *head, *tail;
     struct snake_cell *tmpcell;
+    struct linear_congruential_generator dice;
     long button;
-    int dx, dy;
+    unsigned fruitx = arenasz - 1, fruity = arenasz - 1;
+    int dx = 1, dy = 0;
+    init_lcg_default(&dice);
     if(argv[1])
         arenasz = atoi(argv[1]);
     if(arenasz < 24)
@@ -79,12 +82,12 @@ int run_game(int argl, char *argv[])
     head = makecell(NULL, NULL, 0, 1);
     tail = makecell(head, NULL, 0, 0);
     paintsnake(arena, head);
+    arena[fruity][fruitx]= '$';
     display(arena, displaybuf, arenasz);
     while(alive)
     {
         while(stdincnt() > 0)
         {
-            dy = dx = 0;
             button = keystroke();
             switch(button)
             {
@@ -113,13 +116,26 @@ int run_game(int argl, char *argv[])
             }
         }
         head = makecell(NULL, head, head->r + dy, head->c + dx);
-        tmpcell = tail;
-        tail = tail->prev;
-        remove_cell(tmpcell);
+        if(head->r == fruity && head->c == fruitx)
+        {
+            arena[fruity][fruitx] = '#';
+            while(arena[fruity][fruitx] == '#')
+            {
+                fruitx = lcg_next(&dice) % arenasz;
+                fruity = lcg_next(&dice) % arenasz;
+            }
+        }
+        else
+        {
+            tmpcell = tail;
+            tail = tail->prev;
+            remove_cell(tmpcell);
+        }
         tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
         paintsnake(arena, head);
+        arena[fruity][fruitx] = '$';
         display(arena, displaybuf, arenasz);
-        thsleep(50);
+        thsleep(500);
     }
     for(struct snake_cell *n = head, *next; n != NULL; n = next)
     {

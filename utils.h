@@ -62,9 +62,9 @@ void *tableset(void *ptr, int ch, unsigned width, unsigned height, unsigned size
 long
 #endif
 long timems(void);
+int lcg_next(struct linear_congruential_generator *gen);
 void init_lcg_default(struct linear_congruential_generator *gen);
 void init_lcg(struct linear_congruential_generator *gen, rand_t slope, rand_t yint, rand_t mod, rand_t seed);
-int lcg_next(struct linear_congruential_generator *gen);
 int stdincnt(void);
 int thsleep(unsigned ms);
 void move_cursor(enum cursor_direction dire, unsigned cnt);
