@@ -198,6 +198,13 @@ int stdincnt(void)
         cnt = -1;
     return cnt;
 }
+int lcg_next(struct linear_congruential_generator *gen)
+{
+    int num = gen->seed;
+    gen->seed = gen->seed * gen->slope + gen->yint;
+    gen->seed %= gen->mod;
+    return num;
+}
 void init_lcg_default(struct linear_congruential_generator *gen)
 {
     init_lcg(gen, 25214903917, 11, 281474976710656, time(NULL));
