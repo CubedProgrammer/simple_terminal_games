@@ -14,5 +14,4 @@ rt.o: rt.c
 utils.o: utils.c
 	cc -O3 -c utils.c -fPIC
 install:
-	cp *.out /usr/local/bin
-	cp *.so /usr/local/lib
+	loin libsimple_terminal_games.so *.out

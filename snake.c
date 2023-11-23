@@ -99,6 +99,8 @@ int run_game(int argl, char *argv[])
                 case KEY_ESC:
                     alive = 0;
                     break;
+                case'W':
+                case'w':
                 case KEY_UP:
                     if(dy == 0)
                     {
@@ -106,6 +108,8 @@ int run_game(int argl, char *argv[])
                         dy = -1;
                     }
                     break;
+                case'A':
+                case'a':
                 case KEY_LEFT:
                     if(dx == 0)
                     {
@@ -113,6 +117,8 @@ int run_game(int argl, char *argv[])
                         dy = 0;
                     }
                     break;
+                case'D':
+                case'd':
                 case KEY_RIGHT:
                     if(dx == 0)
                     {
@@ -120,6 +126,8 @@ int run_game(int argl, char *argv[])
                         dy = 0;
                     }
                     break;
+                case'S':
+                case's':
                 case KEY_DN:
                     if(dy == 0)
                     {
@@ -134,7 +142,7 @@ int run_game(int argl, char *argv[])
         }
         nextx = head->c + dx;
         nexty = head->r + dy;
-        if(nextx >= arenasz || nextx < 0 ||nexty >= arenasz || nexty < 0)
+        if(nextx >= arenasz || nextx < 0 || nexty >= arenasz || nexty < 0 || arena[nexty][nextx] == '#')
             alive = 0;
         else
         {
@@ -155,8 +163,8 @@ int run_game(int argl, char *argv[])
                 tail = tail->prev;
                 remove_cell(tmpcell);
             }
-            tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
         }
+        tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
         paintsnake(arena, head);
         arena[fruity][fruitx] = '$';
         display(arena, displaybuf, arenasz);
