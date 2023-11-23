@@ -58,7 +58,6 @@ void display(char **ptr, char *buf, unsigned arenasz)
     }
     fwrite(buf, 1, ind, stdout);
     fflush(stdout);
-    move_cursor(UP, arenasz);
 }
 int run_game(int argl, char *argv[])
 {
@@ -69,11 +68,16 @@ int run_game(int argl, char *argv[])
     struct snake_cell *tmpcell;
     struct linear_congruential_generator dice;
     long button;
+    short delay = 250;
+    unsigned nextx, nexty;
     unsigned fruitx = arenasz - 1, fruity = arenasz - 1;
     int dx = 1, dy = 0;
+    unsigned score = 0;
     init_lcg_default(&dice);
     if(argv[1])
         arenasz = atoi(argv[1]);
+    if(argl > 2)
+        delay = atoi(argv[2]);
     if(arenasz < 24)
         arenasz = 24;
     displaybuf = malloc(arenasz * (arenasz + 1));
@@ -86,6 +90,7 @@ int run_game(int argl, char *argv[])
     display(arena, displaybuf, arenasz);
     while(alive)
     {
+        move_cursor(UP, arenasz);
         while(stdincnt() > 0)
         {
             button = keystroke();
@@ -95,52 +100,76 @@ int run_game(int argl, char *argv[])
                     alive = 0;
                     break;
                 case KEY_UP:
-                    dx = 0;
-                    dy = -1;
+                    if(dy == 0)
+                    {
+                        dx = 0;
+                        dy = -1;
+                    }
                     break;
                 case KEY_LEFT:
-                    dx = -1;
-                    dy = 0;
+                    if(dx == 0)
+                    {
+                        dx = -1;
+                        dy = 0;
+                    }
                     break;
                 case KEY_RIGHT:
-                    dx = 1;
-                    dy = 0;
+                    if(dx == 0)
+                    {
+                        dx = 1;
+                        dy = 0;
+                    }
                     break;
                 case KEY_DN:
-                    dx = 0;
-                    dy = 1;
+                    if(dy == 0)
+                    {
+                        dx = 0;
+                        dy = 1;
+                    }
                     break;
                 default:
                     putchar('\a');
                     fflush(stdout);
             }
         }
-        head = makecell(NULL, head, head->r + dy, head->c + dx);
-        if(head->r == fruity && head->c == fruitx)
-        {
-            arena[fruity][fruitx] = '#';
-            while(arena[fruity][fruitx] == '#')
-            {
-                fruitx = lcg_next(&dice) % arenasz;
-                fruity = lcg_next(&dice) % arenasz;
-            }
-        }
+        nextx = head->c + dx;
+        nexty = head->r + dy;
+        if(nextx >= arenasz || nextx < 0 ||nexty >= arenasz || nexty < 0)
+            alive = 0;
         else
         {
-            tmpcell = tail;
-            tail = tail->prev;
-            remove_cell(tmpcell);
+            head = makecell(NULL, head, nexty, nextx);
+            if(head->r == fruity && head->c == fruitx)
+            {
+                arena[fruity][fruitx] = '#';
+                while(arena[fruity][fruitx] == '#')
+                {
+                    fruitx = lcg_next(&dice) % arenasz;
+                    fruity = lcg_next(&dice) % arenasz;
+                }
+                ++score;
+            }
+            else
+            {
+                tmpcell = tail;
+                tail = tail->prev;
+                remove_cell(tmpcell);
+            }
+            tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
         }
-        tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
         paintsnake(arena, head);
         arena[fruity][fruitx] = '$';
         display(arena, displaybuf, arenasz);
-        thsleep(500);
+        thsleep(delay);
     }
     for(struct snake_cell *n = head, *next; n != NULL; n = next)
     {
         next = n->next;
         remove_cell(n);
     }
+    printf("Your score is %u, good game!\n", score);
+#ifdef _WIN32
+    system("pause");
+#endif
     return 0;
 }

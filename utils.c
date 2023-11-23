@@ -41,7 +41,7 @@ long keystroke(void)
     val = getch();
     switch(val)
     {
-        case 0240:
+        case 0340:
             val = getch();
             switch(val)
             {
@@ -187,15 +187,13 @@ long timems(void)
 }
 int stdincnt(void)
 {
+    int cnt
 #ifndef _WIN32
-    int cnt;
-    if(ioctl(STDIN_FILENO, FIONREAD, &cnt))
-#else
-    HANDLE in = GetStdHandle(STD_INPUT_HANDLE);
-    DWORD cnt;
-    if(!PeekNamedPipe(in, NULL, 0, NULL, &cnt, NULL))
-#endif
+    ;if(ioctl(STDIN_FILENO, FIONREAD, &cnt))
         cnt = -1;
+#else
+    = kbhit();
+#endif
     return cnt;
 }
 int lcg_next(struct linear_congruential_generator *gen)
