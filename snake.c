@@ -69,17 +69,22 @@ int run_game(int argl, char *argv[])
     struct linear_congruential_generator dice;
     long button;
     short delay = 250;
+    unsigned width, height, length;
     unsigned nextx, nexty;
     unsigned fruitx = arenasz - 1, fruity = arenasz - 1;
     int dx = 1, dy = 0;
     unsigned score = 0;
     init_lcg_default(&dice);
+    termsz(&width, &height);
+    length = width < height ? width : height;
     if(argv[1])
         arenasz = atoi(argv[1]);
     if(argl > 2)
         delay = atoi(argv[2]);
     if(arenasz < 24)
         arenasz = 24;
+    if(length < 24)
+        fputs("Your window is too small, please make it bigger.", stderr);
     displaybuf = malloc(arenasz * (arenasz + 1));
     arena = malloc_table(arenasz, arenasz, sizeof(**arena));
     tableset(arena, '.', arenasz, arenasz, sizeof(**arena));

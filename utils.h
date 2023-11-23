@@ -67,6 +67,7 @@ void init_lcg_default(struct linear_congruential_generator *gen);
 void init_lcg(struct linear_congruential_generator *gen, rand_t slope, rand_t yint, rand_t mod, rand_t seed);
 int stdincnt(void);
 int thsleep(unsigned ms);
+int termsz(unsigned *restrict width, unsigned *restrict height);
 void move_cursor(enum cursor_direction dire, unsigned cnt);
 void formatting_reset(void);
 void decorate_text(enum text_decoration dec);

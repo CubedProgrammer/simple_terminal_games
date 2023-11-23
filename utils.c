@@ -223,6 +223,21 @@ int thsleep(unsigned ms)
     return 0;
 #endif
 }
+int termsz(unsigned *restrict width, unsigned *restrict height)
+{
+#ifndef _WIN32
+    struct winsize ws;
+    int succ = ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+    *width = ws.ws_col;
+    *height = ws.ws_row;
+#else
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    int succ = !GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+    *width = info.srWindow.Right - info.srWindow.Left + 1;
+    *height = info.srWindow.Bottom - info.srWindow.Top + 1;
+#endif
+    return succ;
+}
 void move_cursor(enum cursor_direction dire, unsigned cnt)
 {
     printf("\033\133%u%c", cnt, dire);
