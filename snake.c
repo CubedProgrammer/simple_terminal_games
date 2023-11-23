@@ -71,12 +71,13 @@ int run_game(int argl, char *argv[])
     short delay = 250;
     unsigned width, height, length;
     unsigned nextx, nexty;
-    unsigned fruitx = arenasz - 1, fruity = arenasz - 1;
+    unsigned fruitx = 0, fruity = 1;
     int dx = 1, dy = 0;
     unsigned score = 0;
     init_lcg_default(&dice);
     termsz(&width, &height);
     length = width < height ? width : height;
+    length -= 2;
     if(argv[1])
         arenasz = atoi(argv[1]);
     if(argl > 2)
@@ -84,105 +85,112 @@ int run_game(int argl, char *argv[])
     if(arenasz < 24)
         arenasz = 24;
     if(length < 24)
-        fputs("Your window is too small, please make it bigger.", stderr);
-    displaybuf = malloc(arenasz * (arenasz + 1));
-    arena = malloc_table(arenasz, arenasz, sizeof(**arena));
-    tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
-    head = makecell(NULL, NULL, 0, 1);
-    tail = makecell(head, NULL, 0, 0);
-    paintsnake(arena, head);
-    arena[fruity][fruitx]= '$';
-    display(arena, displaybuf, arenasz);
-    while(alive)
+        fputs("Your window is too small, please make it bigger.\n", stderr);
+    else if(length < arenasz)
+        fprintf(stderr, "You requested an arena size of %u, but your window is only %u by %u.\n", arenasz, width, height);
+    else
     {
-        move_cursor(UP, arenasz);
-        while(stdincnt() > 0)
+        displaybuf = malloc(arenasz * (arenasz + 1));
+        arena = malloc_table(arenasz, arenasz, sizeof(**arena));
+        tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
+        head = makecell(NULL, NULL, 0, 1);
+        tail = makecell(head, NULL, 0, 0);
+        paintsnake(arena, head);
+        arena[fruity][fruitx]= '$';
+        puts("Use WASD or arrow keys to change direction, press once and do not hold. You cannot stop moving or reverse.");
+        puts("Eat to grow longer, hitting a wall or yourself is death.");
+        display(arena, displaybuf, arenasz);
+        while(alive)
         {
-            button = keystroke();
-            switch(button)
+            move_cursor(UP, arenasz);
+            while(stdincnt() > 0)
             {
-                case KEY_ESC:
-                    alive = 0;
-                    break;
-                case'W':
-                case'w':
-                case KEY_UP:
-                    if(dy == 0)
-                    {
-                        dx = 0;
-                        dy = -1;
-                    }
-                    break;
-                case'A':
-                case'a':
-                case KEY_LEFT:
-                    if(dx == 0)
-                    {
-                        dx = -1;
-                        dy = 0;
-                    }
-                    break;
-                case'D':
-                case'd':
-                case KEY_RIGHT:
-                    if(dx == 0)
-                    {
-                        dx = 1;
-                        dy = 0;
-                    }
-                    break;
-                case'S':
-                case's':
-                case KEY_DN:
-                    if(dy == 0)
-                    {
-                        dx = 0;
-                        dy = 1;
-                    }
-                    break;
-                default:
-                    putchar('\a');
-                    fflush(stdout);
-            }
-        }
-        nextx = head->c + dx;
-        nexty = head->r + dy;
-        if(nextx >= arenasz || nextx < 0 || nexty >= arenasz || nexty < 0 || arena[nexty][nextx] == '#')
-            alive = 0;
-        else
-        {
-            head = makecell(NULL, head, nexty, nextx);
-            if(head->r == fruity && head->c == fruitx)
-            {
-                arena[fruity][fruitx] = '#';
-                while(arena[fruity][fruitx] == '#')
+                button = keystroke();
+                switch(button)
                 {
-                    fruitx = lcg_next(&dice) % arenasz;
-                    fruity = lcg_next(&dice) % arenasz;
+                    case KEY_ESC:
+                        alive = 0;
+                        break;
+                    case'W':
+                    case'w':
+                    case KEY_UP:
+                        if(dy == 0)
+                        {
+                            dx = 0;
+                            dy = -1;
+                        }
+                        break;
+                    case'A':
+                    case'a':
+                    case KEY_LEFT:
+                        if(dx == 0)
+                        {
+                            dx = -1;
+                            dy = 0;
+                        }
+                        break;
+                    case'D':
+                    case'd':
+                    case KEY_RIGHT:
+                        if(dx == 0)
+                        {
+                            dx = 1;
+                            dy = 0;
+                        }
+                        break;
+                    case'S':
+                    case's':
+                    case KEY_DN:
+                        if(dy == 0)
+                        {
+                            dx = 0;
+                            dy = 1;
+                        }
+                        break;
+                    default:
+                        putchar('\a');
+                        fflush(stdout);
                 }
-                ++score;
             }
+            nextx = head->c + dx;
+            nexty = head->r + dy;
+            if(nextx >= arenasz || nextx < 0 || nexty >= arenasz || nexty < 0 || arena[nexty][nextx] == '#')
+                alive = 0;
             else
             {
-                tmpcell = tail;
-                tail = tail->prev;
-                remove_cell(tmpcell);
+                head = makecell(NULL, head, nexty, nextx);
+                if(head->r == fruity && head->c == fruitx)
+                {
+                    arena[fruity][fruitx] = '#';
+                    while(arena[fruity][fruitx] == '#')
+                    {
+                        fruitx = lcg_next(&dice) % arenasz;
+                        fruity = lcg_next(&dice) % arenasz;
+                    }
+                    ++score;
+                }
+                else
+                {
+                    tmpcell = tail;
+                    tail = tail->prev;
+                    remove_cell(tmpcell);
+                }
             }
+            tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
+            paintsnake(arena, head);
+            arena[fruity][fruitx] = '$';
+            display(arena, displaybuf, arenasz);
+            thsleep(delay);
         }
-        tableset(arena, '.', arenasz, arenasz, sizeof(**arena));
-        paintsnake(arena, head);
-        arena[fruity][fruitx] = '$';
-        display(arena, displaybuf, arenasz);
-        thsleep(delay);
-    }
-    for(struct snake_cell *n = head, *next; n != NULL; n = next)
-    {
-        next = n->next;
-        remove_cell(n);
-    }
-    printf("Your score is %u, good game!\n", score);
+        for(struct snake_cell *n = head, *next; n != NULL; n = next)
+        {
+            next = n->next;
+            remove_cell(n);
+        }
+        printf("Your score is %u, good game!\n", score);
 #ifdef _WIN32
-    system("pause");
+        system("pause");
 #endif
+    }
     return 0;
 }
