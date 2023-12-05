@@ -69,6 +69,8 @@ int stdincnt(void);
 int thsleep(unsigned ms);
 int termsz(unsigned *restrict width, unsigned *restrict height);
 void move_cursor(enum cursor_direction dire, unsigned cnt);
+long minl(long x, long y);
+long maxl(long x, long y);
 void formatting_reset(void);
 void decorate_text(enum text_decoration dec);
 void background_reset(void);

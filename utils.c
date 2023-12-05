@@ -242,6 +242,14 @@ void move_cursor(enum cursor_direction dire, unsigned cnt)
 {
     printf("\033\133%u%c", cnt, dire);
 }
+long minl(long x, long y)
+{
+    return x < y ? x : y;
+}
+long maxl(long x, long y)
+{
+    return x > y ? x : y;
+}
 void formatting_reset(void)
 {
     fputs("\033\133m", stdout);

@@ -18,3 +18,14 @@ for i in *.out; do
     cp ${i} /usr/local/bin/${i:0: -4};
 done
 ```
+## Games
+### connect\_four
+Two-player game, connect four of your symbol in a row, column or diagonal first to win.
+Can be customized to have a bigger board, or require more than four to win.
+
+Press keys 1, 2, 3, 4, 5, 6, 7, ... to drop a piece in the corresponding column.
+### snake
+You are snake slithering around a room, eat food by passing your head through it.
+You grow longer after you eat, and new food appears elsewhere.
+
+Arrow keys to change direction of motion.

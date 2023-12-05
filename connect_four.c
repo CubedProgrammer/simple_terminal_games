@@ -87,7 +87,7 @@ int run_game(int argl, char *argv[])
     if(argl > 4)
         argl = 4;
     for(int i = 1; i < argl; ++i)
-        defaultv[i - 1] = atoi(argv[i]);
+        defaultv[i - 1] = maxl(defaultv[i - 1], atoi(argv[i]));
     width = defaultv[0], height = defaultv[1];
     require = defaultv[2];
     area = width * height;

@@ -187,7 +187,10 @@ int run_game(int argl, char *argv[])
             next = n->next;
             remove_cell(n);
         }
-        printf("Your score is %u, good game!\n", score);
+        if(score == 0)
+            puts("You did not grow at all this game, better luck next time!");
+        else
+            printf("Your score is %u, good game!\n", score);
 #ifdef _WIN32
         system("pause");
 #endif
