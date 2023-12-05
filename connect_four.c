@@ -90,6 +90,12 @@ int run_game(int argl, char *argv[])
         defaultv[i - 1] = maxl(defaultv[i - 1], atoi(argv[i]));
     width = defaultv[0], height = defaultv[1];
     require = defaultv[2];
+    if(require > width || require > height)
+    {
+        fprintf(stderr, "%u is too big for a %u by %u board.\n", require, width, height);
+        require = minl(width, height);
+        fprintf(stderr, "You need %u in a row to win instead.\n", require);
+    }
     area = width * height;
     board = malloc(area * sizeof(*board));
     memset(board, ' ', area * sizeof(*board));
