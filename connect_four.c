@@ -83,6 +83,7 @@ int run_game(int argl, char *argv[])
     char result = 0;
     char *board;
     const char playerch[] = "XO";
+    char surrender = 0;
     char currplayer = 0;
     if(argl > 4)
         argl = 4;
@@ -112,18 +113,31 @@ int run_game(int argl, char *argv[])
             k -= 'A' - 10;
         else if(k >= 'a' && k <= 'z')
             k -= 'a' - 10;
-        if(play(board, width, height, k, playerch[currplayer]))
+        else if(k == ' ')
+            k = width;
+        if(k == width)
+        {
+            surrender = 1;
+            result = playerch[currplayer];
+        }
+        else if(play(board, width, height, k, playerch[currplayer]))
         {
             currplayer = !currplayer;
             move_cursor(UP, height + 1);
             display(board, width, height);
         }
-        result = getres(board, width, height, require);
+        if(result == 0)
+            result = getres(board, width, height, require);
     }
     if(result == 1)
         puts("Draw!");
     else if(result != 0)
-        printf("%c has won the game.\n", result);
+    {
+        if(surrender)
+            printf("%c has resigned the game.\n", result);
+        else
+            printf("%c has won the game.\n", result);
+    }
     free(board);
     return 0;
 }
