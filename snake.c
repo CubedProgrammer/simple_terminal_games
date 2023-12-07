@@ -64,6 +64,8 @@ int run_game(int argl, char *argv[])
     char alive = 1;
     unsigned arenasz = 24;
     char **arena, *displaybuf;
+    char *scorefile = NULL;
+    FILE *scorefh = NULL;
     struct snake_cell *head, *tail;
     struct snake_cell *tmpcell;
     struct linear_congruential_generator dice;
@@ -78,6 +80,14 @@ int run_game(int argl, char *argv[])
     termsz(&width, &height);
     length = width < height ? width : height;
     length -= 2;
+    if(argv[1])
+    {
+        if(argv[1][0] > '9' || argv[1][9] < '0')
+        {
+            scorefile = argv[1];
+            ++argv;
+        }
+    }
     if(argv[1])
         arenasz = atoi(argv[1]);
     if(argl > 2)
@@ -191,6 +201,20 @@ int run_game(int argl, char *argv[])
             puts("You did not grow at all this game, better luck next time!");
         else
             printf("Your score is %u, good game!\n", score);
+        if(scorefile != NULL)
+        {
+            scorefh = fopen(scorefile, "a");
+            if(scorefh == NULL)
+            {
+                fprintf(stderr, "Failed to open %s", scorefile);
+                perror("");
+            }
+            else
+            {
+                fprintf(scorefh, "%u\n", score);
+                fclose(scorefh);
+            }
+        }
 #ifdef _WIN32
         system("pause");
 #endif
