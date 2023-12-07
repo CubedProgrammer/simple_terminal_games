@@ -76,6 +76,7 @@ int run_game(int argl, char *argv[])
     unsigned fruitx = 0, fruity = 1;
     int dx = 1, dy = 0;
     unsigned score = 0;
+    unsigned highscore = 0, currscore;
     init_lcg_default(&dice);
     termsz(&width, &height);
     length = width < height ? width : height;
@@ -85,6 +86,18 @@ int run_game(int argl, char *argv[])
         if(argv[1][0] > '9' || argv[1][9] < '0')
         {
             scorefile = argv[1];
+            scorefh = fopen(scorefile, "r");
+            if(scorefh == NULL)
+            {
+                fprintf(stderr, "Failed to open %s", scorefile);
+                perror("");
+            }
+            else
+            {
+                while(fscanf(scorefh, "%u", &currscore) == 1)
+                    highscore = currscore > highscore ? currscore : highscore;
+                fclose(scorefh);
+            }
             ++argv;
         }
     }
@@ -203,6 +216,8 @@ int run_game(int argl, char *argv[])
             printf("Your score is %u, good game!\n", score);
         if(scorefile != NULL)
         {
+            if(score > highscore)
+                puts("Congradulations on new high score!");
             scorefh = fopen(scorefile, "a");
             if(scorefh == NULL)
             {
