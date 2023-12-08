@@ -23,6 +23,11 @@ void *tableset(void *ptr, int ch, unsigned width, unsigned height, unsigned size
     memset((void*)((void**)ptr + height), ch, width * height * size);
     return ptr;
 }
+void *tablecpy(void *dest, const void *src, unsigned width, unsigned height, unsigned size)
+{
+    memcpy((void*)((void**)dest + height), (const void*)((void *const*)src + height), width * height * size);
+    return dest;
+}
 #ifdef _WIN32
 long
 #endif

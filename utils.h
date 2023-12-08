@@ -58,6 +58,7 @@ keystroke_t;
 keystroke_t keystroke(void);
 void *malloc_table(unsigned width, unsigned height, unsigned size);
 void *tableset(void *ptr, int ch, unsigned width, unsigned height, unsigned size);
+void *tablecpy(void *dest, const void *src, unsigned width, unsigned height, unsigned size);
 #ifdef _WIN32
 long
 #endif
