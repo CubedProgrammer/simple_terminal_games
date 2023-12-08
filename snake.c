@@ -59,6 +59,29 @@ void display(char **ptr, char *buf, unsigned arenasz)
     fwrite(buf, 1, ind, stdout);
     fflush(stdout);
 }
+int ucomparcv(const void *x, const void *y)
+{
+    unsigned m = *(const unsigned*)x;
+    unsigned n = *(const unsigned*)y;
+    return m > n ? 1 : m < n ? -1 : 0;
+}
+unsigned ubsearch(const unsigned *arr, unsigned len, unsigned target)
+{
+    unsigned hi = len - 1, lo = 0;
+    unsigned mid;
+    while(hi > lo)
+    {
+        mid = (hi + lo) / 2;
+        if(arr[mid] < target)
+            lo = mid + 1;
+        else
+            hi = mid;
+    }
+    if(arr[lo] < target)
+        return len;
+    else
+        return lo;
+}
 int run_game(int argl, char *argv[])
 {
     char alive = 1;
@@ -76,7 +99,10 @@ int run_game(int argl, char *argv[])
     unsigned fruitx = 0, fruity = 1;
     int dx = 1, dy = 0;
     unsigned score = 0;
-    unsigned highscore = 0, currscore;
+    unsigned currscore;
+    unsigned *scorearr = NULL, *tmparr;
+    unsigned scorelen = 0, scorecapa = 8;
+    unsigned scorerank;
     init_lcg_default(&dice);
     termsz(&width, &height);
     length = width < height ? width : height;
@@ -94,8 +120,26 @@ int run_game(int argl, char *argv[])
             }
             else
             {
+                scorearr = malloc(scorecapa * sizeof(*scorearr));
                 while(fscanf(scorefh, "%u", &currscore) == 1)
-                    highscore = currscore > highscore ? currscore : highscore;
+                {
+                    if(scorelen == scorecapa)
+                    {
+                        tmparr = malloc((scorecapa + (scorecapa >> 1)) * sizeof(*tmparr));
+                        if(tmparr == NULL)
+                            perror("malloc failed");
+                        else
+                        {
+                            scorecapa += scorecapa >> 1;
+                            memcpy(tmparr, scorearr, scorelen * sizeof(unsigned));
+                            free(scorearr);
+                            scorearr = tmparr;
+                        }
+                    }
+                    scorearr[scorelen] = currscore;
+                    ++scorelen;
+                }
+                qsort(scorearr, scorelen, sizeof(*scorearr), ucomparcv);
                 fclose(scorefh);
             }
             ++argv;
@@ -216,8 +260,13 @@ int run_game(int argl, char *argv[])
             printf("Your score is %u, good game!\n", score);
         if(scorefile != NULL)
         {
-            if(score > highscore)
-                puts("Congradulations on new high score!");
+            scorerank = ubsearch(scorearr, scorelen, score + 1);
+            scorerank = scorelen - scorerank + 1;
+            if(scorerank == 1)
+                puts("All time high!");
+            else
+                printf("%uth place of all time.\n", scorerank);
+            free(scorearr);
             scorefh = fopen(scorefile, "a");
             if(scorefh == NULL)
             {
