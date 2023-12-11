@@ -77,6 +77,7 @@ void display(char *board, unsigned width, unsigned height)
 int run_game(int argl, char *argv[])
 {
     unsigned defaultv[3] = {7, 6, 4};
+    unsigned tw, th;
     unsigned width, height, require;
     unsigned area;
     char result = 0;
@@ -90,6 +91,14 @@ int run_game(int argl, char *argv[])
         defaultv[i - 1] = maxl(defaultv[i - 1], atoi(argv[i]));
     width = defaultv[0], height = defaultv[1];
     require = defaultv[2];
+    termsz(&tw, &th);
+    if(width > tw || height > th)
+    {
+        fprintf(stderr, "Your terminal is %u by %u, but you requested a %u by %u board size.\n", tw, th, width, height);
+        width = 7;
+        height = 6;
+        require = 4;
+    }
     if(require > width || require > height)
     {
         fprintf(stderr, "%u is too big for a %u by %u board.\n", require, width, height);
