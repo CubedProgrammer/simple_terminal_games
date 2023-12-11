@@ -72,8 +72,7 @@ void display(char *board, unsigned width, unsigned height)
         fwrite(board + r * width, 1, width, stdout);
         putchar('\n');
     }
-    if(width <= 36)
-        fwrite(keystrokes, 1, width + 1, stdout);
+    fwrite(keystrokes, 1, width + 1, stdout);
 }
 int run_game(int argl, char *argv[])
 {
@@ -100,8 +99,12 @@ int run_game(int argl, char *argv[])
     area = width * height;
     board = malloc(area * sizeof(*board));
     memset(board, ' ', area * sizeof(*board));
-    if(width <= 36)
-        keystrokes[width] = '\n';
+    if(width > 36)
+    {
+        fprintf(stderr, "Width of %u is too high, maximum is 36.\n", width);
+        width = 36;
+    }
+    keystrokes[width] = '\n';
     display(board, width, height);
     for(long k = keystroke(); k != KEY_ESC; k = result == 0 ? keystroke() : 033)
     {
